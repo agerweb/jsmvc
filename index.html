@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <div vbind="v1"></dvi>
+    <div vbind="v3"></dvi>
+
+        <script>
+            class Model {
+                constructor() {
+                    this.listeners = []
+                }
+                watch(listener) {
+                    this.listeners.push(listener)
+                }
+                set(value) {
+                    this.listeners.forEach(item => {
+                        item(value)
+                    })
+                }
+                vbind(node) {
+                    this.watch(val => {
+                        node.innerHTML = val
+                    })
+                }
+            }
+            class Controller{
+                constructor(cb) {
+                    this.models={}
+                    this.init()
+                }
+                init(){
+                    let views=document.querySelectorAll('[vbind]');
+                    views=[...views]
+                    views.forEach(view=>{
+                        let modelName=view.getAttribute('vbind')
+                        this.models[modelName]=new Model()
+                        this.models[modelName].vbind(view)
+                    })
+                }
+                exec(){
+                    return new Promise(resolve=>{
+                        resolve(this.models)
+                    })
+                }
+            }
+        </script>
+        <script>
+
+
+            //业务代码
+            let c=new Controller()
+            c.exec().then(v=>{
+                let v1=v.v1;
+                v1.set('xixi')
+
+                let v2=v.v2;
+                v1.set('xixi2222')
+            }).catch(err=>{
+                console.log(err)
+            })
+        </script>
+</body>
+
+</html>
